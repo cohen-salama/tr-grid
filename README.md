@@ -27,4 +27,4 @@ The functionality of this app is achieved by utilizing a Web Audio Api context t
 
 ## live version
 
-[tr-grid](https://tr-grid.netlify.app)
+[TR-GRID](https://tr-grid.netlify.app)
