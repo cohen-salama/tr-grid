@@ -194,7 +194,7 @@ class App extends React.Component {
     })
   }
 
-  changeStatus = (id, keyName, audio) => {
+  changeStatus = (id, keyName) => {
     const { beats } = this.state
 
     if (beats[id][keyName]) {
@@ -223,7 +223,7 @@ class App extends React.Component {
     })
   }
 
-  clearGrid = (event) => {
+  clearGrid = () => {
     const { resolution } = this.state
 
     this.setState({
@@ -233,6 +233,56 @@ class App extends React.Component {
       clapGrid: this.createGrid(resolution),
       hihatGrid: this.createGrid(resolution)
     })
+  }
+
+  saveBeat = () => {
+    let json_string = JSON.stringify(this.state.beats)
+    let link = document.createElement('a')
+    link.download = 'beat.json'
+    const blob = new Blob([json_string], {type: 'text/plain'})
+    link.href = window.URL.createObjectURL(blob)
+    link.click()
+  }
+
+  loadBeat = (event) => {
+    const { beats, kickGrid, snareGrid, clapGrid, hihatGrid} = this.state
+
+    let reader = new FileReader();
+    reader.onload = onReaderLoad;
+    reader.readAsText(event.target.files[0]);
+   
+    var self = this 
+
+    function onReaderLoad(event) {
+      let newBeats = JSON.parse(event.target.result)
+
+      newBeats.forEach((step, index) => {
+        if (step.kick === true) {
+          self.changeToBlack(index, 'kickGrid', kickGrid)
+          if (beats[index].kick !== true) {
+            beats[index].kick = true
+          }
+        } else if (step.snare === true) {
+          self.changeToBlack(index, 'snareGrid', snareGrid)
+          if (beats[index].snare !== true)
+            beats[index].snare = true
+        } else if (step.clap === true) {
+          self.changeToBlack(index, 'clapGrid', clapGrid)
+          if (beats[index].clap !== true) {
+            beats[index].clap = true
+          }
+        } else if (step.hihat === true) {
+          self.changeToBlack(index, 'hihatGrid', hihatGrid)
+          if (beats[index].hihat !== true) {
+            beats[index].hihat = true
+          } 
+        }
+      })
+
+      self.setState({
+        beats: beats
+      })
+    }
   }
 
   render() {
@@ -283,6 +333,12 @@ class App extends React.Component {
         <button className='control-btn' onClick={() => this.pressPlay(this.state.sixteenth)}>PLAY</button>
         <button className='control-btn' onClick={this.stopLoop}>STOP</button>
         <button className='control-btn' onClick={this.clearGrid}>CLEAR</button>
+        <button className='control-btn' onClick={this.saveBeat}>SAVE</button>
+        <br/><br/>
+        <div className='loader'>
+          <h3 id='loader-title'>LOAD BEAT</h3>
+          <input type='file' onChange={this.loadBeat}></input>
+        </div>
       </div>
     )
   }
