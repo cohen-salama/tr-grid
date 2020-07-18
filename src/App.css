@@ -53,6 +53,17 @@
   padding-bottom: 100%;
 }
 
+.volume {
+  position: fixed;
+  right: 3%;
+  margin-top: 1.2vw;
+  height: 1.5vw;
+  font-size: 1.5vw;
+  color: orangered;
+  border-width: 1.5px;
+  width: 3.5%;
+}
+
 .control-btn {
   width: 10%;
   height: 3vw;
