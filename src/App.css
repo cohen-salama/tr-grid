@@ -10,6 +10,24 @@
   margin: 20px;
 }
 
+#steps {
+  display: flex;
+  position: fixed;
+  top: 3.5%;
+  right: 30%;
+}
+
+#steps-title {
+  margin: 5px;
+  font-size: 1.6vw;
+}
+
+#steps-input {
+  width: 40%;
+  font-size: 1.2vw;
+  margin-left: 10px;
+}
+
 #tempo {
   display: flex;
   position: fixed; 
@@ -19,12 +37,13 @@
 
 #tempo-title {
   margin: 5px;
+  font-size: 1.6vw;
 }
 
 #tempo-input {
-  width: 45px; 
-  height: 30px; 
-  margin-left: 15px; 
+  width: 40%;
+  font-size: 1.2vw; 
+  margin-left: 15px;
   text-align: left;
 }
 

@@ -12,6 +12,7 @@ class App extends React.Component {
     this.state = {
       context: new (window.AudioContext || window.webkitAudioContext)(),
       resolution: 16,
+      resolutionInput: 16,
       tempo: 120,
       sixteenth: 125,
       offset: 0,
@@ -19,39 +20,50 @@ class App extends React.Component {
       play: false,
       stop: false,
       pressedPlay: false,
-      kickVolume: 50,
-      snareVolume: 50,
-      clapVolume: 50,
-      hihatVolume: 50
+      kickVolume: 99,
+      kickVolInput: 99,
+      snareVolume: 99,
+      snareVolInput: 99,
+      clapVolume: 99,
+      clapVolInput: 99,
+      hihatVolume: 99,
+      hihatVolInput: 99
     }
   }
 
   componentDidMount() {
     const { context, resolution } = this.state
 
-    this.setGridsandGains(resolution)
+    this.setGains()
+
+    this.setGrids(resolution)
 
     let sounds = [[kick, 'kick'], [snare, 'snare'], [clap, 'clap'], [hihat, 'hihat']]
 
     this.getBufferSources(context, sounds)
   }
 
-  setGridsandGains = (resolution) => {
+  setGains = () => {
+    this.setState ({
+      kickGain: this.createGainNode(),
+      snareGain: this.createGainNode(),
+      clapGain: this.createGainNode(),
+      hihatGain: this.createGainNode()
+    })
+  }
+
+  setGrids = (resolution) => {
     this.setState ({
       beats: this.createBeats(resolution),
       kickGrid: this.createGrid(resolution),
-      kickGain: this.createGainNode(),
       snareGrid: this.createGrid(resolution),
-      snareGain: this.createGainNode(),
       clapGrid: this.createGrid(resolution),
-      clapGain: this.createGainNode(),
       hihatGrid: this.createGrid(resolution),
-      hihatGain: this.createGainNode(),
       steps: this.createSteps(resolution)
     })
   }
 
-  createBeats(num) {
+  createBeats = (num) => {
     let beatsArray = []
 
     for (let i = 0; i < num; i++) {
@@ -71,7 +83,7 @@ class App extends React.Component {
     return grid
   }
 
-  createSteps(num) {
+  createSteps= (num) => {
     let steps = []
 
     for (let i = 0; i < num; i++) {
@@ -82,7 +94,7 @@ class App extends React.Component {
     return steps
   }
 
-  createGainNode() {
+  createGainNode = () => {
     const { context } = this.state
     const gainNode = context.createGain()
     return gainNode
@@ -122,7 +134,7 @@ class App extends React.Component {
 
     }  else if (this.state.play === true && this.state.stop === true) {
       setTimeout(() => this.setState({play: false, stop: false})
-      , 1.1 * 16 * this.state.sixteenth)
+      , 1.1 * this.state.resolution * this.state.sixteenth)
     }
   }
 
@@ -241,6 +253,77 @@ class App extends React.Component {
     })
   }
 
+  handleSteps = (event) => {
+    if (event.target.value > 1
+     && event.target.value < 33) {
+      this.setState({
+        resolutionInput: event.target.value,
+        resolution: event.target.value
+      })
+      this.setGrids(event.target.value)
+     } else if (event.target.value < 2) {
+       this.setState({
+         resolutionInput: null,
+         resolution: 2
+       })
+       this.setGrids(4)
+     } else if (event.target.value > 32) {
+       this.setState({
+         resolutionInput: null,
+         resolution: 32
+       })
+     }
+  }
+
+  handleVolume = (name, event) => {
+    if (event.target.value < 100 && event.target.value !== '') {
+      console.log(event.target.value)
+      let volumeName = name + 'Volume'
+      let volInputName = name + 'VolInput'
+      let gainName = name + 'Gain'
+
+      let newVolume = parseInt(event.target.value)
+      let newGain = newVolume / 100
+      
+      let gainNode = this.state[gainName]
+      gainNode.gain.value = newGain
+
+      this.setState({
+        [volumeName]: parseInt(event.target.value),
+        [volInputName]: parseInt(event.target.value),
+        [gainName]: gainNode
+      })
+    } else if (event.target.value === '') {
+      let volumeName = name + 'Volume'
+      let volInputName = name + 'VolInput'
+      let gainName = name + 'Gain'
+
+      let newGain = 0.5
+      let gainNode = this.state[gainName]
+      gainNode.gain.value = newGain
+
+      this.setState({
+        [volumeName]: parseInt(event.target.value),
+        [volInputName]: parseInt(event.target.value),
+        [gainName]: gainNode
+      })
+    } else {
+      let volumeName = name + 'Volume'
+      let volInputName = name + 'VolInput'
+      let gainName = name + 'Gain'
+
+      let newGain = 0.99
+      let gainNode = this.state[gainName]
+      gainNode.gain.value = newGain
+
+      this.setState({
+        [volumeName]: parseInt(event.target.value),
+        [volInputName]: 99,
+        [gainName]: gainNode
+      })
+    }
+  }
+
   clearGrid = () => {
     const { resolution } = this.state
 
@@ -303,22 +386,6 @@ class App extends React.Component {
     }
   }
 
-  handleVolume = (name, event) => {
-    let volumeName = name + 'Volume'
-    let gainName = name + 'Gain'
-
-    let newVolume = parseInt(event.target.value)
-    let newGain = newVolume / 100
-    
-    let gainNode = this.state[gainName]
-    gainNode.gain.value = newGain
-
-    this.setState({
-      [volumeName]: parseInt(event.target.value),
-      [gainName]: gainNode,
-    })
-  }
-
   render() {
     const { steps, kickGrid, snareGrid, clapGrid, hihatGrid } = this.state
 
@@ -326,6 +393,10 @@ class App extends React.Component {
       <div style={{width: '100%'}}>
         <div id='app-header'>
           <h1 id='app-title'>TR-GRID</h1>
+          <div id='steps'>
+            <h3 id='steps-title'>STEPS</h3>
+            <input id='steps-input' type='number' min={2} max={32} value={this.state.resolutionInput} onChange={this.handleSteps}></input>
+          </div>
           <div id='tempo'>
             <h3 id='tempo-title'>TEMPO</h3>
             <input id='tempo-input' type='number' min={0} max={400} value={this.state.tempo} onChange={this.handleTempo}></input>
@@ -338,7 +409,7 @@ class App extends React.Component {
               <button className='square' style={{gridColumn: `${step.index + 2} / ${step.index + 3}`, backgroundColor:`${kickGrid[step.index]}`}} onClick={() => this.changeStep(step.index, 'kickGrid')}/>
             )
           })}
-          <input className='volume' type='number' min={0} max={99} value={this.state.kickVolume} onChange={(event) => this.handleVolume('kick', event)}></input>
+          <input className='volume' type='number' min={0} max={99} value={this.state.kickVolInput} onChange={(event) => this.handleVolume('kick', event)}></input>
         </div>
         <div className='steps-row'>
           <h3 className='sound-name'>SNARE</h3>
@@ -347,7 +418,7 @@ class App extends React.Component {
               <button className='square' style={{gridColumn: `${step.index + 2} / ${step.index + 3}`, backgroundColor:`${snareGrid[step.index]}`}} onClick={() => this.changeStep(step.index, 'snareGrid')}/>
             )
           })}
-          <input className='volume' type='number' min={0} max={1} value={this.state.snareVolume} onChange={(event) => this.handleVolume('snare', event)}></input>
+          <input className='volume' type='number' min={0} max={1} value={this.state.snareVolInput} onChange={(event) => this.handleVolume('snare', event)}></input>
         </div>
         <div className='steps-row'>
           <h3 className='sound-name'>CLAP</h3>
@@ -356,7 +427,7 @@ class App extends React.Component {
               <button className='square' style={{gridColumn: `${step.index + 2} / ${step.index + 3}`, backgroundColor:`${clapGrid[step.index]}`}} onClick={() => this.changeStep(step.index, 'clapGrid')}/>
             )
           })}
-          <input className='volume' type='number' min={0} max={100} value={this.state.clapVolume} onChange={(event) => this.handleVolume('clap', event)}></input>
+          <input className='volume' type='number' min={0} max={100} value={this.state.clapVolInput} onChange={(event) => this.handleVolume('clap', event)}></input>
         </div>
         <div className='steps-row'>
           <h3 className='sound-name'>HIHAT</h3>
@@ -365,7 +436,7 @@ class App extends React.Component {
               <button className='square' style={{gridColumn: `${step.index + 2} / ${step.index + 3}`, backgroundColor:`${hihatGrid[step.index]}`}} onClick={() => this.changeStep(step.index, 'hihatGrid')}/>
             )
           })}
-          <input className='volume' type='number' min={0} max={100} value={this.state.hihatVolume} onChange={(event) => this.handleVolume('hihat', event)}></input>
+          <input className='volume' type='number' min={0} max={100} value={this.state.hihatVolInput} onChange={(event) => this.handleVolume('hihat', event)}></input>
         </div>
         <br/>
         <button className='control-btn' onClick={() => this.pressPlay(this.state.sixteenth)}>PLAY</button>
