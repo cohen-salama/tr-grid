@@ -277,7 +277,6 @@ class App extends React.Component {
 
   handleVolume = (name, event) => {
     if (event.target.value < 100 && event.target.value !== '') {
-      console.log(event.target.value)
       let volumeName = name + 'Volume'
       let volInputName = name + 'VolInput'
       let gainName = name + 'Gain'
