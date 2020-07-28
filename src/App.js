@@ -417,7 +417,7 @@ class App extends React.Component {
               <button className='square' style={{gridColumn: `${step.index + 2} / ${step.index + 3}`, backgroundColor:`${snareGrid[step.index]}`}} onClick={() => this.changeStep(step.index, 'snareGrid')}/>
             )
           })}
-          <input className='volume' type='number' min={0} max={1} value={this.state.snareVolInput} onChange={(event) => this.handleVolume('snare', event)}></input>
+          <input className='volume' type='number' min={0} max={99} value={this.state.snareVolInput} onChange={(event) => this.handleVolume('snare', event)}></input>
         </div>
         <div className='steps-row'>
           <h3 className='sound-name'>CLAP</h3>
@@ -426,7 +426,7 @@ class App extends React.Component {
               <button className='square' style={{gridColumn: `${step.index + 2} / ${step.index + 3}`, backgroundColor:`${clapGrid[step.index]}`}} onClick={() => this.changeStep(step.index, 'clapGrid')}/>
             )
           })}
-          <input className='volume' type='number' min={0} max={100} value={this.state.clapVolInput} onChange={(event) => this.handleVolume('clap', event)}></input>
+          <input className='volume' type='number' min={0} max={99} value={this.state.clapVolInput} onChange={(event) => this.handleVolume('clap', event)}></input>
         </div>
         <div className='steps-row'>
           <h3 className='sound-name'>HIHAT</h3>
@@ -435,7 +435,7 @@ class App extends React.Component {
               <button className='square' style={{gridColumn: `${step.index + 2} / ${step.index + 3}`, backgroundColor:`${hihatGrid[step.index]}`}} onClick={() => this.changeStep(step.index, 'hihatGrid')}/>
             )
           })}
-          <input className='volume' type='number' min={0} max={100} value={this.state.hihatVolInput} onChange={(event) => this.handleVolume('hihat', event)}></input>
+          <input className='volume' type='number' min={0} max={99} value={this.state.hihatVolInput} onChange={(event) => this.handleVolume('hihat', event)}></input>
         </div>
         <br/>
         <button className='control-btn' onClick={() => this.pressPlay(this.state.sixteenth)}>PLAY</button>
