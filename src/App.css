@@ -24,7 +24,7 @@
 
 #steps-input {
   width: 40%;
-  font-size: 1.2vw;
+  font-size: 16px;
   margin-left: 10px;
 }
 
@@ -42,7 +42,7 @@
 
 #tempo-input {
   width: 40%;
-  font-size: 1.2vw; 
+  font-size: 16px; 
   margin-left: 15px;
   text-align: left;
 }
@@ -77,7 +77,7 @@
   right: 3%;
   margin-top: 1.2vw;
   height: 1.5vw;
-  font-size: 1.5vw;
+  font-size: 16px;
   color: orangered;
   border-width: 1.5px;
   width: 3.5%;
